@@ -11,6 +11,7 @@ import Loc._
 import mapper._
 
 import code.model._
+import code.model.mundoj._
 
 
 /**
@@ -34,19 +35,15 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Item, Leilao, Lance)
 
     // where to search snippet
     LiftRules.addToPackages("code")
 
-    // Build SiteMap
-    def sitemap = SiteMap(
-      Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
+    val menus = List(Menu.i("Home") / "index" >> User.AddUserMenusAfter, Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content")))  ::: Item.menus ::: Leilao.menus ::: Lance.menus
 
-      // more complex because this menu allows anything in the
-      // /static path to be visible
-      Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
-	       "Static Content")))
+    // Build SiteMap
+    def sitemap = SiteMap(menus :_*)
 
     def sitemapMutators = User.sitemapMutator
 
