@@ -10,7 +10,6 @@ import sitemap._
 import Loc._
 import mapper._
 
-import code.model._
 import code.model.mundoj._
 
 
@@ -35,17 +34,17 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, User, Item, Leilao, Lance)
+    Schemifier.schemify(true, Schemifier.infoF _, Usuario, Item, Leilao, Lance)
 
     // where to search snippet
     LiftRules.addToPackages("code")
 
-    val menus = List(Menu.i("Home") / "index" >> User.AddUserMenusAfter, Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content")))  ::: Item.menus ::: Leilao.menus ::: Lance.menus
+    val menus = List(Menu.i("Início") / "index" >> Usuario.AddUserMenusAfter)  ::: Item.menus
 
     // Build SiteMap
     def sitemap = SiteMap(menus :_*)
 
-    def sitemapMutators = User.sitemapMutator
+    def sitemapMutators = Usuario.sitemapMutator
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
@@ -63,7 +62,7 @@ class Boot {
     LiftRules.early.append(_.setCharacterEncoding("UTF-8"))
 
     // What is the function to test if a user is logged in?
-    LiftRules.loggedInTest = Full(() => User.loggedIn_?)
+    LiftRules.loggedInTest = Full(() => Usuario.loggedIn_?)
 
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
