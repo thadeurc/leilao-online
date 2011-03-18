@@ -39,7 +39,7 @@ class Boot {
     // where to search snippet
     LiftRules.addToPackages("code")
 
-    val menus = List(Menu.i("Início") / "index" >> Usuario.AddUserMenusAfter)  ::: Item.menus
+    val menus = List(Menu.i("Início") / "index" >> Usuario.AddUserMenusAfter )  ::: Item.menus ::: Leilao.menus
 
     // Build SiteMap
     def sitemap = SiteMap(menus :_*)
@@ -67,6 +67,11 @@ class Boot {
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))    
+
+    LiftRules.statelessRewrite.append{
+      case RewriteRequest(ParsePath(List("Item","view",id),_,_,_),_,_) =>
+        RewriteResponse(List("item","detalhe"), Map("id" -> id))
+    }
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
