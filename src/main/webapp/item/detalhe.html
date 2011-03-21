@@ -7,9 +7,28 @@
                     <td id="descricao"><strong><item:descricao/></strong></td>
                 </tr>
                 <tr>
-                    <td id="leiloar"><item:leiloar/></td>
+                    <!-- aqui vem a parte de comet -->
+                    <td id="lance_mais_alto">
+                        Lance mais alto:
+                        <strong><item:lance_mais_alto/></strong>
+                    </td>
                 </tr>
             </table>
         </div>
     </lift:Item.detalhes>
+    <lift:Item.lance form="POST">
+        <div class="column span-24">
+            <table>
+                <tr>
+                    <td><entry:itemId/><td>
+                </tr>
+                <tr>
+                    <td>Valor: R$ <entry:valor/> </td>
+                </tr>
+                <tr>
+                    <td><entry:submit/></td>
+                </tr>
+            </table>
+        </div>
+    </lift:Item.lance>
 </lift:surround>

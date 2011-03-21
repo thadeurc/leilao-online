@@ -34,12 +34,12 @@ class Boot {
     // Use Lift's Mapper ORM to populate the database
     // you don't need to use Mapper to use Lift... use
     // any ORM you want
-    Schemifier.schemify(true, Schemifier.infoF _, Usuario, Item, Leilao, Lance)
+    Schemifier.schemify(true, Schemifier.infoF _, Usuario, Item, Lance)
 
     // where to search snippet
     LiftRules.addToPackages("code")
 
-    val menus = List(Menu.i("Início") / "index" >> Usuario.AddUserMenusAfter )  ::: Item.menus ::: Leilao.menus
+    val menus = List(Menu.i("Início") / "index" >> Usuario.AddUserMenusAfter )  ::: Item.menus
 
     // Build SiteMap
     def sitemap = SiteMap(menus :_*)
@@ -70,7 +70,7 @@ class Boot {
 
     LiftRules.statelessRewrite.append{
       case RewriteRequest(ParsePath(List("Item","view",id),_,_,_),_,_) =>
-        RewriteResponse(List("item","detalhe"), Map("id" -> id))
+        RewriteResponse(List("Item","detalhe"), Map("id" -> id))
     }
 
     // Make a transaction span the whole HTTP request
