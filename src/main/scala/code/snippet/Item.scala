@@ -13,27 +13,6 @@ import xml.{NodeSeq, Text}
 
 class Item {
 
-  object valor extends RequestVar[String]("")
-  object itemId extends RequestVar[String](S.param("id").openOr(""))
-
-  def lance (in: NodeSeq): NodeSeq = {
-    bind("entry", in, "itemid"-> SHtml.text(itemId.is, itemId(_), "type" -> "hidden"),
-                      "valor" -> SHtml.text(valor.is, valor(_)),
-                      "submit"-> SHtml.submit("Dar Lance!", novoLance))
-  }
-
-  def detalhes(in: NodeSeq): NodeSeq = {
-    val id = S.param("id").map(toLong).openOr(-1L)
-    ItemData.findByKey(id).map {
-      item => bind("item", in, "descricao"        -> Text(item.descricao.is),
-                               "lance_mais_alto"  -> lanceMaisAlto(id)
-              )
-
-    }.openOr{
-      bind("item", in, "descricao" -> Text("Item %d não existe.".format(id)))
-    }
-  }
-
   def terminados (in: NodeSeq): NodeSeq = {
     val inicio = S.param("inicio").map(toLong).openOr(0L)
 
@@ -68,23 +47,14 @@ class Item {
     <tr><td><linha:descricao/></td><td><linha:valor/></td><td><linha:termino/></td></tr>
   }
 
-  def novoLance() {
-    val valorEntrado = valor.is.toDouble
-    if(valorEntrado <= 0.0){
-      S.error("Valor deve ser positivo.")
-    }else{
-      val lance = LanceData.create
-      lance.item(ItemData.findByKey(itemId.is.toLong))
-      lance.valor(valorEntrado)
-      lance.usuario(Usuario.currentUser)
-      lance.validate match {
-        case Nil => lance.save
-        case x => S.error(x)
-      }
-      valor("")
+  def detalhes(in: NodeSeq): NodeSeq = {
+    val id = S.param("id").map(toLong).openOr(-1L)
+    ItemData.findByKey(id).map {
+      item => bind("item", in, "descricao" -> Text(item.descricao.is))
+    }.openOr{
+      bind("item", in, "descricao" -> Text("Item %d não existe.".format(id)))
     }
   }
-
 
   def lanceMaisAlto(itemId: Long): Text = {
     LanceData.lanceMaisAlto(itemId) match {
