@@ -3,8 +3,8 @@ package code.comet
 import net.liftweb.actor.LiftActor
 import scala.collection.mutable.Map
 import code.model.mundoj.{Item, Lance, Usuario}
-import net.liftweb.common.{Empty, Box}
-import xml.NodeSeq
+import net.liftweb.common._
+import xml.Text
 import net.liftweb.http._
 import net.liftweb.http.js._
 import net.liftweb.http.js.JE._
@@ -69,15 +69,10 @@ object GerenciadorDoLeilao extends LiftActor {
 
 class ClienteDoLeilao extends CometActor {
   import Mensagens._
-
   object itemId extends RequestVar[String](S.param("id").openOr(""))
   var maiorLance: Box[Lance] = Empty
 
-
-  def lance (in: NodeSeq): NodeSeq = {
-    bind("entry", in, "itemId"-> SHtml.text(itemId.is, itemId(_), "type" -> "hidden"),
-                      "submit"-> SHtml.ajaxButton("Dar Lance", JsRaw("$('#valorLance').attr('value')"), novoLance _))
-  }
+  override def defaultPrefix = Full("item")
 
   def novoLance(valor: String): JsCmd = {
     val valorEntrado = valor.toDouble
@@ -99,19 +94,29 @@ class ClienteDoLeilao extends CometActor {
 
   def atualizaMaiorLance(lance: Box[Lance]) = {
     maiorLance = lance
-    reRender(false)
+    //partialUpdate(Js)
   }
 
-
-
   def render = {
+    println("*********" + S.param("id"))
     def valorDoMaiorLance = {
       maiorLance.map(_.valor.is.toString).openOr("Não há lances")
     }
-    bind("lance_mais_alto"  -> valorDoMaiorLance)
+
+    def descricao = Item.findByKey(itemId).map{
+      item => item.descricao.is
+    }.openOr{
+      "Item %s não existe.".format(itemId.is)
+    }
+
+    bind("lance_mais_alto" -> valorDoMaiorLance,
+         "id"              -> SHtml.text(itemId.is, itemId(_), "type" -> "hidden"),
+         "submit"          -> SHtml.ajaxButton(Text("Dar Lance"), JsRaw("$('#valorLance').attr('value')"), novoLance _),
+         "descricao"       -> descricao
+    )
   }
 
-  implicit def requestVarToLong(v: RequestVar[String]): Long = v.is.toLong
+  implicit def requestVarToLong(v: RequestVar[String]): Long = if(v.isEmpty) 0L else v.is.toLong
 }
 
 
