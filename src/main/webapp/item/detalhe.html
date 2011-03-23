@@ -1,58 +1,24 @@
 <lift:surround with="default" at="content">
-    <!--<lift:Item.detalhes>
-        <div class="column span-24">
-            <h2>Detalhes do Item</h2>
-            <table>
-                <tr>
-                    <td id="descricao"><strong><item:descricao/></strong></td>
-                </tr>
-                <tr>
-                    <td id="lance_mais_alto">
-                        Lance mais alto:
-                        <strong><item:lance_mais_alto/></strong>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </lift:Item.detalhes>
-    <lift:Item.lance form="POST">
-        <div class="column span-24">
-            <table>
-                <tr>
-                    <td><entry:itemId/><td>
-                </tr>
-                <tr>
-                    <td>Valor: R$ <entry:valor/> </td>
-                </tr>
-                <tr>
-                    <td><entry:submit/></td>
-                </tr>
-            </table>
-        </div>
-    </lift:Item.lance> -->
-    <lift:comet type="ClienteDoLeilao">
+    <lift:Item.detalhes>
         <div class="column span-24">
             <h2>Detalhes do Item</h2><br>
             <strong><item:descricao/></strong>
-            <table>
-                <tr>
-                    <td id="lance_mais_alto">
-                    Lance mais alto:
-                    <strong><item:lance_mais_alto/></strong>
-                    </td>
-                </tr>
-            </table>
         </div>
+    </lift:Item.detalhes>
+    <lift:comet type="ClienteDoLeilao">
         <div class="column span-24">
             <table>
-                <tr>
-                    <td><item:id/><td>
-                </tr>
                 <tr>
                     <td>Valor: R$ <input type="text" id="valorLance"/></td>
                 </tr>
                 <tr>
                     <td><item:submit/></td>
+                </tr>
+                <tr>
+                    <td id="lance_mais_alto">
+                    Lance mais alto:
+                    <strong><item:lance_mais_alto/></strong>
+                    </td>
                 </tr>
             </table>
         </div>

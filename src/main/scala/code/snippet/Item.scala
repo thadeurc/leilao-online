@@ -9,6 +9,7 @@ import net.liftweb.http._
 import net.liftweb.http.SHtml._
 import code.model.mundoj.{Item => ItemData, Lance => LanceData, Usuario}
 import xml.{NodeSeq, Text}
+import code.comet.Mensagens
 
 
 class Item {
@@ -50,10 +51,18 @@ class Item {
   def detalhes(in: NodeSeq): NodeSeq = {
     val id = S.param("id").map(toLong).openOr(-1L)
     ItemData.findByKey(id).map {
-      item => bind("item", in, "descricao" -> Text(item.descricao.is))
+      item => {
+        notificaCometActor(item)
+        bind("item", in, "descricao" -> Text(item.descricao.is))
+      }
     }.openOr{
       bind("item", in, "descricao" -> Text("Item %d não existe.".format(id)))
     }
+  }
+
+  def notificaCometActor(item: ItemData) = {
+    import Mensagens._
+    S.session.map(_.setupComet("ClienteDoLeilao", Empty, RegistrarItemDeInteresse(item)))
   }
 
   def lanceMaisAlto(itemId: Long): Text = {

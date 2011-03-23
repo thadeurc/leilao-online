@@ -2,8 +2,7 @@ package code.model.mundoj
 
 import java.math.MathContext
 import _root_.net.liftweb.mapper._
-import net.liftweb.common.Box
-
+import net.liftweb.common.{Empty, Box, Full}
 
 object Lance extends Lance with LongKeyedMetaMapper[Lance] {
   override def fieldOrder = List(id)

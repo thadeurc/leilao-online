@@ -16,6 +16,7 @@ object Mensagens {
   case class DarLance(itemId: Long, valor: Double, usuario: Usuario)
   case class PegarMaiorLance(itemId: Long)
   case class MaiorLance(lance: Box[Lance])
+  case class RegistrarItemDeInteresse(item: Item)
 }
 
 object GerenciadorDoLeilao extends LiftActor {
@@ -34,6 +35,7 @@ object GerenciadorDoLeilao extends LiftActor {
       case Some(lista) => clientes += (itemId -> lista.+:(cliente))
       case None        => clientes += (itemId -> List(cliente))
     }
+    reply(pegarMaiorLance(itemId))
   }
 
   def desregistraClienteParaItem(cliente: CometActor, itemId: Long) = {
@@ -48,6 +50,7 @@ object GerenciadorDoLeilao extends LiftActor {
     lance.item(Item.findByKey(itemId))
     lance.valor(valor)
     lance.usuario(usuario)
+    lance.save
     atualizaClientes(itemId, lanceMaisAlto(itemId))
   }
 
@@ -69,7 +72,7 @@ object GerenciadorDoLeilao extends LiftActor {
 
 class ClienteDoLeilao extends CometActor {
   import Mensagens._
-  object itemId extends RequestVar[String](S.param("id").openOr(""))
+  var itemId: Long = 0L
   var maiorLance: Box[Lance] = Empty
 
   override def defaultPrefix = Full("item")
@@ -84,39 +87,32 @@ class ClienteDoLeilao extends CometActor {
     GerenciadorDoLeilao ! DesregistrarCliente(this, itemId)
   }
 
-  override protected def localSetup() = {
-    GerenciadorDoLeilao ! RegistrarCliente(this, itemId)
+  def registraInteresse(item: Item) = {
+    itemId = item.id.is
+    GerenciadorDoLeilao !? RegistrarCliente(this, itemId) match {
+      case MaiorLance(lance) => atualizaMaiorLance(lance)
+      case _                 => /* ignora */
+    }
   }
 
-  override def lowPriority: PartialFunction[Any, Unit] = {
-    case MaiorLance(lance) => atualizaMaiorLance(lance)
+  override def highPriority: PartialFunction[Any, Unit] = {
+    case MaiorLance(lance)              => atualizaMaiorLance(lance)
+    case RegistrarItemDeInteresse(item) => registraInteresse(item)
   }
 
   def atualizaMaiorLance(lance: Box[Lance]) = {
     maiorLance = lance
-    //partialUpdate(Js)
+    reRender(false)
   }
 
   def render = {
-    println("*********" + S.param("id"))
     def valorDoMaiorLance = {
       maiorLance.map(_.valor.is.toString).openOr("Não há lances")
     }
-
-    def descricao = Item.findByKey(itemId).map{
-      item => item.descricao.is
-    }.openOr{
-      "Item %s não existe.".format(itemId.is)
-    }
-
     bind("lance_mais_alto" -> valorDoMaiorLance,
-         "id"              -> SHtml.text(itemId.is, itemId(_), "type" -> "hidden"),
-         "submit"          -> SHtml.ajaxButton(Text("Dar Lance"), JsRaw("$('#valorLance').attr('value')"), novoLance _),
-         "descricao"       -> descricao
+         "submit"          -> SHtml.ajaxButton(Text("Dar Lance"), JsRaw("$('#valorLance').attr('value')"), novoLance _)
     )
   }
-
-  implicit def requestVarToLong(v: RequestVar[String]): Long = if(v.isEmpty) 0L else v.is.toLong
 }
 
 
