@@ -70,7 +70,7 @@ class Boot {
 
     LiftRules.statelessRewrite.append{
       case RewriteRequest(ParsePath(List("Item","view",id),_,_,_),_,_) =>
-        RewriteResponse(List("Item","detalhe"), Map("id" -> id))
+        RewriteResponse(List("item","detalhe"), Map("id" -> id))
     }
 
     // Make a transaction span the whole HTTP request

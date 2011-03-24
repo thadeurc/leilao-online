@@ -26,8 +26,8 @@ object Item extends Item with LongKeyedMetaMapper[Item] with CRUDify[Long, Item]
 
   override def menus = {
     super.menus :::
-    List(Menu(Loc("item-detalhe", List("Item","detalhe") -> false, "Detalhes", Hidden)),
-    Menu(Loc("item-terminado", List("Item","terminados") -> false, "Leilões Terminados", usuarioLogado)))
+    List(Menu(Loc("item-detalhe", List("item","detalhe") -> false, "Detalhes", Hidden)),
+    Menu(Loc("item-terminado", List("item","terminados") -> false, "Leilões Terminados", usuarioLogado)))
   }
 
   override def findForListParams = {
