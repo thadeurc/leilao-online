@@ -24,7 +24,7 @@ object Item extends Item with LongKeyedMetaMapper[Item] with CRUDify[Long, Item]
 
   private def usuarioLogado = If(() => Usuario.loggedIn_?, () => RedirectResponse("/user_mgt/login"))
 
-  override def menus = {
+  override lazy val menus = {
     super.menus :::
     List(Menu(Loc("item-detalhe", List("Item","detalhe") -> false, "Detalhes", Hidden)),
     Menu(Loc("item-terminado", List("Item","terminados") -> false, "Leilões Terminados", usuarioLogado)))
@@ -47,6 +47,8 @@ object Item extends Item with LongKeyedMetaMapper[Item] with CRUDify[Long, Item]
             OrderBy(termino, Descending)
     )
   }
+
+  override def referer: String = "/Item/list"
 }
 
 class Item extends LongKeyedMapper[Item] with IdPK {
@@ -60,7 +62,7 @@ class Item extends LongKeyedMapper[Item] with IdPK {
 
     val formatador = new SimpleDateFormat("dd/MM/yyyy")
 
-    override def displayName = "Termina em"
+    override def displayName = "Termina em (dd/MM/yyyy)"
 
     override def parse(datetime: String): Box[Date] = {
       try {
@@ -70,12 +72,8 @@ class Item extends LongKeyedMapper[Item] with IdPK {
       }
     }
 
-    override def asHtml = {
-      Text(asString)
-    }
-
-    override def asString = {
-      formatador.format(is)
+    override def format(data: Date): String = {
+      formatador.format(data)
     }
   }
 }

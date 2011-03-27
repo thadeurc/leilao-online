@@ -70,6 +70,7 @@ class Item {
       case Full(info) => Text("R$" + info.valor)
       case _ => Text("Não há lances para esse item.")
     }
-
   }
+
+
 }
