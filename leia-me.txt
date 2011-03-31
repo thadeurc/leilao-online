@@ -1,0 +1,26 @@
+Como executar o Leilão Online?
+==============================
+
+1- Pré-requisitos?
+	1.1 Java 6.0
+	1.2 Scala 2.8.1
+	1.3 SBT 0.7.4
+
+
+2- Quais são os passos a serem seguidos?
+	2.0 *** Tenha certeza que está conectado a internet, pois algumas bibliotecas serão baixadas ***
+	2.1 Com o fonte baixado do site da revista, entre no diretório leilao-online	
+	2.2 Entre no modo interativo do SBT, utilizando o comando sbt
+	2.3 Digite update para pegar todas as bibliotecas que o projeto tem dependência
+	2.4 Digite jetty-run para automaticamente compilar e iniciar o jetty
+	2.5 Acesse a URL http://localhost:8080 para ver a tela inicial
+	
+3- Como usar a aplicação?
+	3.1 Va em Sign Up e crie um usuário
+	3.2 Crie itens com datas de leilão e dê seus lances!
+	
+4- Sugestão dos autores para se ter uma experiência mais interessante: 
+	4.1 Crie dois usuários diferentes
+	4.2 Abra duas instâncias do seu browser favorito (não use tabs!) e faça o login com um em cada instância
+	4.3 Coloque as janelas dos browsers uma ao lado da outra e comece a dar lances no mesmo ítem, com os diferentes
+		usuários.
